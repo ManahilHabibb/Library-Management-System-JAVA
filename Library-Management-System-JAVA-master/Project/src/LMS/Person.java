@@ -1,19 +1,19 @@
 package LMS;
 
 public abstract class Person {
-    protected int id; // Unique ID for the person
-    protected String password; // Password for the person
-    protected String name; // Person's name
-    protected String address; // Person's address
-    protected int phoneNo; // Person's phone number
+    protected int id; 
+    protected String password; 
+    protected String name; 
+    protected String address; 
+    protected int phoneNo; 
 
-    static int currentIdNumber = 0; // Unique ID counter
+    static int currentIdNumber = 0; 
 
     // Constructor initializes the person data.
     public Person(int idNum, String name, String address, int phoneNum) {
         currentIdNumber++;
 
-        // If idNum is -1, assign a new unique id; otherwise use the given id.
+        // If idNum is -1, assign a new unique id; otherwise, use the given id.
         if (idNum == -1) {
             this.id = currentIdNumber;
         } else {
@@ -63,5 +63,58 @@ public abstract class Person {
 
     public static void setIDCount(int n) {
         currentIdNumber = n;
+    }
+
+    // Open for extension: Person actions
+    public void performAction(PersonAction action) {
+        action.execute(this);
+    }
+}
+
+// Abstract Action Interface
+interface PersonAction {
+    void execute(Person person);
+}
+
+// Concrete Actions
+class UpdateAddressAction implements PersonAction {
+    private String newAddress;
+
+    public UpdateAddressAction(String newAddress) {
+        this.newAddress = newAddress;
+    }
+
+    @Override
+    public void execute(Person person) {
+        person.setAddress(newAddress);
+        System.out.println(person.getName() + "'s address updated to: " + newAddress);
+    }
+}
+
+class UpdatePhoneAction implements PersonAction {
+    private int newPhoneNo;
+
+    public UpdatePhoneAction(int newPhoneNo) {
+        this.newPhoneNo = newPhoneNo;
+    }
+
+    @Override
+    public void execute(Person person) {
+        person.setPhone(newPhoneNo);
+        System.out.println(person.getName() + "'s phone number updated to: " + newPhoneNo);
+    }
+}
+
+class UpdateNameAction implements PersonAction {
+    private String newName;
+
+    public UpdateNameAction(String newName) {
+        this.newName = newName;
+    }
+
+    @Override
+    public void execute(Person person) {
+        person.setName(newName);
+        System.out.println("Person's name updated to: " + newName);
     }
 }

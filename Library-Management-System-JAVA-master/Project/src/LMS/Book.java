@@ -18,7 +18,7 @@ public class Book {
         this.isIssued = issued;
     }
 
-    // Getters and setters (Only data handling, no operations)
+    // Getters and setters
     public int getID() {
         return bookID;
     }
@@ -45,5 +45,33 @@ public class Book {
 
     public static void setIDCount(int n) {
         currentIdNumber = n;
+    }
+
+    // Open for extension: Book actions
+    public void performAction(BookAction action) {
+        action.execute(this);
+    }
+}
+
+// Abstract Action Class
+interface BookAction {
+    void execute(Book book);
+}
+
+// Action: Issuing a book
+class IssueBookAction implements BookAction {
+    @Override
+    public void execute(Book book) {
+        book.setIssued(true);
+        System.out.println("Book '" + book.getTitle() + "' has been issued.");
+    }
+}
+
+// Action: Returning a book
+class ReturnBookAction implements BookAction {
+    @Override
+    public void execute(Book book) {
+        book.setIssued(false);
+        System.out.println("Book '" + book.getTitle() + "' has been returned.");
     }
 }

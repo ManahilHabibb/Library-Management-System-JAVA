@@ -4,25 +4,51 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class FineCalculator {
+    private FineStrategy fineStrategy;
 
-    /**
-     * Computes the fine for the given loan.
-     * 
-     * @param loan               The loan for which to compute the fine.
-     * @param bookReturnDeadline Allowed number of days before fine applies.
-     * @param perDayFine         Fine amount per overdue day.
-     * @return The total fine.
-     */
+    public FineCalculator(FineStrategy fineStrategy) {
+        this.fineStrategy = fineStrategy;
+    }
+
     public double computeFine(Loan loan, int bookReturnDeadline, double perDayFine) {
-        // Use the return date if available; otherwise, use current date.
+        return fineStrategy.calculateFine(loan, bookReturnDeadline, perDayFine);
+    }
+}
+
+// Fine Strategy Interface
+interface FineStrategy {
+    double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine);
+}
+
+// Standard Fixed Rate Fine Strategy
+class FixedRateFineStrategy implements FineStrategy {
+    @Override
+    public double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine) {
         Date issuedDate = loan.getIssuedDate();
         Date returnDate = loan.getDateReturned() != null ? loan.getDateReturned() : new Date();
 
         long totalDays = ChronoUnit.DAYS.between(issuedDate.toInstant(), returnDate.toInstant());
         long overdueDays = totalDays - bookReturnDeadline;
-        if (overdueDays > 0) {
-            return overdueDays * perDayFine;
+
+        return (overdueDays > 0) ? overdueDays * perDayFine : 0.0;
+    }
+}
+
+// Progressive Fine Strategy (Fine increases per day)
+class ProgressiveFineStrategy implements FineStrategy {
+    @Override
+    public double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine) {
+        Date issuedDate = loan.getIssuedDate();
+        Date returnDate = loan.getDateReturned() != null ? loan.getDateReturned() : new Date();
+
+        long totalDays = ChronoUnit.DAYS.between(issuedDate.toInstant(), returnDate.toInstant());
+        long overdueDays = totalDays - bookReturnDeadline;
+        double fine = 0.0;
+
+        for (int i = 1; i <= overdueDays; i++) {
+            fine += i * perDayFine; 
         }
-        return 0.0;
+
+        return fine;
     }
 }

@@ -13,7 +13,6 @@ public class Library {
     private double perDayFine;
     private int holdRequestExpiry;
 
-    // Singleton instance
     private static Library instance = null;
 
     private Library() {
@@ -84,16 +83,66 @@ public class Library {
         this.holdRequestExpiry = holdRequestExpiry;
     }
 
-    // Methods to add items to collections
+    // Open for extension: Library operations
+    public void performAction(LibraryAction action) {
+        action.execute(this);
+    }
+
+    // Fix: Keep the original methods so no error occurs
     public void addPerson(Person p) {
-        persons.add(p);
+        performAction(new AddPersonAction(p)); // Uses OCP internally
     }
 
     public void addBook(Book b) {
-        books.add(b);
+        performAction(new AddBookAction(b)); // Uses OCP internally
     }
 
     public void addLoan(Loan l) {
-        loans.add(l);
+        performAction(new AddLoanAction(l)); // Uses OCP internally
+    }
+}
+
+// Abstract Action Class
+interface LibraryAction {
+    void execute(Library library);
+}
+
+// Concrete Actions
+class AddPersonAction implements LibraryAction {
+    private Person person;
+
+    public AddPersonAction(Person person) {
+        this.person = person;
+    }
+
+    @Override
+    public void execute(Library library) {
+        library.getPersons().add(person);
+    }
+}
+
+class AddBookAction implements LibraryAction {
+    private Book book;
+
+    public AddBookAction(Book book) {
+        this.book = book;
+    }
+
+    @Override
+    public void execute(Library library) {
+        library.getBooks().add(book);
+    }
+}
+
+class AddLoanAction implements LibraryAction {
+    private Loan loan;
+
+    public AddLoanAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Library library) {
+        library.getLoans().add(loan);
     }
 }

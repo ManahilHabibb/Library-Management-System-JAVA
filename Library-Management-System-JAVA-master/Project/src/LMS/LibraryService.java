@@ -4,9 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryService {
-
-    // Finds a borrower by ID
+    // Fix: Restore original methods to prevent errors while using OCP internally
     public Borrower findBorrower(Library library, int id) {
+        return performAction(new FindBorrowerOperation(), library, id);
+    }
+
+    public Clerk findClerk(Library library, int id) {
+        return performAction(new FindClerkOperation(), library, id);
+    }
+
+    public List<Book> searchBooks(Library library, int searchType, String query) {
+        return performAction(new SearchBooksOperation(), library, searchType, query);
+    }
+
+    // OCP-Enabled Execution
+    public <T> T performAction(LibraryOperation<T> operation, Library library, Object... args) {
+        return operation.execute(library, args);
+    }
+}
+
+// Abstract Interface for Library Operations
+interface LibraryOperation<T> {
+    T execute(Library library, Object... args);
+}
+
+// Find Borrower Implementation
+class FindBorrowerOperation implements LibraryOperation<Borrower> {
+    @Override
+    public Borrower execute(Library library, Object... args) {
+        int id = (int) args[0];
         for (Person p : library.getPersons()) {
             if (p instanceof Borrower && p.getID() == id) {
                 return (Borrower) p;
@@ -14,9 +40,13 @@ public class LibraryService {
         }
         return null;
     }
+}
 
-    // Finds a clerk by ID
-    public Clerk findClerk(Library library, int id) {
+// Find Clerk Implementation
+class FindClerkOperation implements LibraryOperation<Clerk> {
+    @Override
+    public Clerk execute(Library library, Object... args) {
+        int id = (int) args[0];
         for (Person p : library.getPersons()) {
             if (p instanceof Clerk && p.getID() == id) {
                 return (Clerk) p;
@@ -24,10 +54,16 @@ public class LibraryService {
         }
         return null;
     }
+}
 
-    // Searches for books based on search type (1: title, 2: subject, 3: author)
-    public List<Book> searchBooks(Library library, int searchType, String query) {
+// Search Books Implementation
+class SearchBooksOperation implements LibraryOperation<List<Book>> {
+    @Override
+    public List<Book> execute(Library library, Object... args) {
+        int searchType = (int) args[0];
+        String query = (String) args[1];
         List<Book> matchedBooks = new ArrayList<>();
+
         for (Book b : library.getBooks()) {
             if (searchType == 1 && b.getTitle().equalsIgnoreCase(query)) {
                 matchedBooks.add(b);
@@ -39,15 +75,4 @@ public class LibraryService {
         }
         return matchedBooks;
     }
-
-    // public double computeTotalFine(Library library, Borrower borrower) {
-    // double totalFine = 0.0;
-    // for (Loan loan : library.getLoans()) {
-    // if (loan.getBorrower().equals(borrower)) {
-    // totalFine += loan.computeFine(); // Ensure computeFine() exists in Loan
-    // }
-    // }
-    // return totalFine;
-    // }
-
 }

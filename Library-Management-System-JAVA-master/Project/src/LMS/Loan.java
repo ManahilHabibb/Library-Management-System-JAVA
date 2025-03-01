@@ -67,4 +67,52 @@ public class Loan {
         this.issuedDate = issuedDate;
     }
 
+    // Open for extension: Loan operations
+    public void performAction(LoanAction action) {
+        action.execute(this);
+    }
+}
+
+// Abstract Action Class
+interface LoanAction {
+    void execute(Loan loan);
+}
+
+// Concrete Actions
+class ReturnLoanAction implements LoanAction {
+    private Staff receiver;
+
+    public ReturnLoanAction(Staff receiver) {
+        this.receiver = receiver;
+    }
+
+    @Override
+    public void execute(Loan loan) {
+        loan.setDateReturned(new Date());
+        loan.setReceiver(receiver);
+        System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been returned by "
+                + loan.getBorrower().getName());
+    }
+}
+
+class RenewLoanAction implements LoanAction {
+    private Date newIssuedDate;
+
+    public RenewLoanAction(Date newIssuedDate) {
+        this.newIssuedDate = newIssuedDate;
+    }
+
+    @Override
+    public void execute(Loan loan) {
+        loan.setIssuedDate(newIssuedDate);
+        System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been renewed.");
+    }
+}
+
+class MarkFinePaidAction implements LoanAction {
+    @Override
+    public void execute(Loan loan) {
+        loan.setFinePaid(true);
+        System.out.println("Fine for loan on book '" + loan.getBook().getTitle() + "' has been paid.");
+    }
 }

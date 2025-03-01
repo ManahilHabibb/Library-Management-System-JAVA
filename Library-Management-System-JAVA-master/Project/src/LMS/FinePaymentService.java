@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class FinePaymentService {
     private FineCalculator calculator;
 
-    public FinePaymentService() {
-        this.calculator = new FineCalculator();
+    public FinePaymentService(FineStrategy fineStrategy) {
+        this.calculator = new FineCalculator(fineStrategy);
     }
 
     /**

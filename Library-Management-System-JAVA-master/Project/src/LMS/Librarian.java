@@ -1,21 +1,28 @@
 package LMS;
 
-public class Librarian extends Staff {
-    private int officeNo;
+// Abstract base class for staff members with an office or desk assignment
+abstract class OfficeAssignedStaff extends Staff {
+    protected int officeNo;
     private static int currentOfficeNumber = 0;
 
-    public Librarian(int id, String n, String a, int p, double s, int of) {
-        super(id, n, a, p, s);
-        if (of == -1) {
+    public OfficeAssignedStaff(int id, String name, String address, int phone, double salary, int officeNo) {
+        super(id, name, address, phone, salary);
+        if (officeNo == -1) {
             this.officeNo = currentOfficeNumber;
         } else {
-            this.officeNo = of;
+            this.officeNo = officeNo;
         }
         currentOfficeNumber++;
     }
 
-    // Getter for office number
+    // Getter for office
     public int getOfficeNo() {
         return officeNo;
+    }
+}
+
+public class Librarian extends OfficeAssignedStaff {
+    public Librarian(int id, String name, String address, int phone, double salary, int officeNo) {
+        super(id, name, address, phone, salary, officeNo);
     }
 }

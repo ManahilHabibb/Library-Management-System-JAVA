@@ -12,15 +12,21 @@ public class Borrower extends Person {
         this.onHoldBooks = new ArrayList<>();
     }
 
-    // Getters and Setters (Only for Data Access)
+    // Getters
     public ArrayList<Loan> getBorrowedBooks() {
-        return borrowedBooks;
+        return new ArrayList<>(borrowedBooks); 
     }
 
     public ArrayList<HoldRequest> getOnHoldBooks() {
-        return onHoldBooks;
+        return new ArrayList<>(onHoldBooks);
     }
 
+    // Perform an operation on a borrower (Open/Closed Principle applied)
+    public void performAction(BorrowerAction action) {
+        action.execute(this);
+    }
+
+    // Methods to modify lists safely
     public void addBorrowedBook(Loan loan) {
         borrowedBooks.add(loan);
     }
@@ -29,11 +35,72 @@ public class Borrower extends Person {
         borrowedBooks.remove(loan);
     }
 
-    public void addHoldRequest(HoldRequest hr) {
-        onHoldBooks.add(hr);
+    public void addHoldRequest(HoldRequest holdRequest) {
+        onHoldBooks.add(holdRequest);
     }
 
-    public void removeHoldRequest(HoldRequest hr) {
-        onHoldBooks.remove(hr);
+    public void removeHoldRequest(HoldRequest holdRequest) {
+        onHoldBooks.remove(holdRequest);
+    }
+}
+
+// Abstract Borrower Action
+interface BorrowerAction {
+    void execute(Borrower borrower);
+}
+
+// Concrete Action: Add Borrowed Book
+class AddBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public AddBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addBorrowedBook(loan);
+    }
+}
+
+// Concrete Action: Remove Borrowed Book
+class RemoveBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public RemoveBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeBorrowedBook(loan);
+    }
+}
+
+// Concrete Action: Add Hold Request
+class AddHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public AddHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addHoldRequest(holdRequest);
+    }
+}
+
+// Concrete Action: Remove Hold Request
+class RemoveHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public RemoveHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeHoldRequest(holdRequest);
     }
 }
