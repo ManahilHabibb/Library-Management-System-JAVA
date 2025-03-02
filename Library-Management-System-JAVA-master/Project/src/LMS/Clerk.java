@@ -9,7 +9,7 @@ public class Clerk extends Staff {
 
         // If the provided deskNo is -1, assign a new unique desk number.
         if (deskNo == -1) {
-            this.deskNo = currentDeskNumber;
+            this.deskNo = currentDeskNumber++;
         } else {
             this.deskNo = deskNo;
         }

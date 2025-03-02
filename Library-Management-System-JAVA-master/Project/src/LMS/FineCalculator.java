@@ -11,25 +11,32 @@ public class FineCalculator {
     }
 
     public double computeFine(Loan loan, int bookReturnDeadline, double perDayFine) {
-        return fineStrategy.calculateFine(loan, bookReturnDeadline, perDayFine);
+        long overdueDays = calculateOverdueDays(loan, bookReturnDeadline);
+        return fineStrategy.calculateFine(overdueDays, perDayFine);
+    }
+
+    private long calculateOverdueDays(Loan loan, int bookReturnDeadline) {
+        Date issuedDate = loan.getIssuedDate();
+        Date returnDate = (loan.getDateReturned() != null) ? loan.getDateReturned() : new Date();
+
+        if (issuedDate == null) {
+            throw new IllegalArgumentException("Issued date cannot be null");
+        }
+
+        long totalDays = ChronoUnit.DAYS.between(issuedDate.toInstant(), returnDate.toInstant());
+        return Math.max(0, totalDays - bookReturnDeadline);
     }
 }
 
 // Fine Strategy Interface
 interface FineStrategy {
-    double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine);
+    double calculateFine(long overdueDays, double perDayFine);
 }
 
 // Standard Fixed Rate Fine Strategy
 class FixedRateFineStrategy implements FineStrategy {
     @Override
-    public double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine) {
-        Date issuedDate = loan.getIssuedDate();
-        Date returnDate = loan.getDateReturned() != null ? loan.getDateReturned() : new Date();
-
-        long totalDays = ChronoUnit.DAYS.between(issuedDate.toInstant(), returnDate.toInstant());
-        long overdueDays = totalDays - bookReturnDeadline;
-
+    public double calculateFine(long overdueDays, double perDayFine) {
         return (overdueDays > 0) ? overdueDays * perDayFine : 0.0;
     }
 }
@@ -37,18 +44,11 @@ class FixedRateFineStrategy implements FineStrategy {
 // Progressive Fine Strategy (Fine increases per day)
 class ProgressiveFineStrategy implements FineStrategy {
     @Override
-    public double calculateFine(Loan loan, int bookReturnDeadline, double perDayFine) {
-        Date issuedDate = loan.getIssuedDate();
-        Date returnDate = loan.getDateReturned() != null ? loan.getDateReturned() : new Date();
-
-        long totalDays = ChronoUnit.DAYS.between(issuedDate.toInstant(), returnDate.toInstant());
-        long overdueDays = totalDays - bookReturnDeadline;
+    public double calculateFine(long overdueDays, double perDayFine) {
         double fine = 0.0;
-
         for (int i = 1; i <= overdueDays; i++) {
-            fine += i * perDayFine; 
+            fine += i * perDayFine;
         }
-
         return fine;
     }
 }

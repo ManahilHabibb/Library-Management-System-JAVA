@@ -12,8 +12,9 @@ public class Staff extends Person {
         return salary;
     }
 
-    // Open for extension: Staff actions
-    public void performAction(StaffAction action) {
+    //  Use the same performAction method as in Person
+    @Override
+    public void performAction(PersonAction action) {
         action.execute(this);
     }
 }

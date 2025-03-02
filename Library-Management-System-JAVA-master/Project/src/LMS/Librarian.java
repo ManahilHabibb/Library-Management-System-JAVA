@@ -3,16 +3,10 @@ package LMS;
 // Abstract base class for staff members with an office or desk assignment
 abstract class OfficeAssignedStaff extends Staff {
     protected int officeNo;
-    private static int currentOfficeNumber = 0;
 
     public OfficeAssignedStaff(int id, String name, String address, int phone, double salary, int officeNo) {
         super(id, name, address, phone, salary);
-        if (officeNo == -1) {
-            this.officeNo = currentOfficeNumber;
-        } else {
-            this.officeNo = officeNo;
-        }
-        currentOfficeNumber++;
+        this.officeNo = officeNo; // Removed static counter dependency
     }
 
     // Getter for office
@@ -22,7 +16,9 @@ abstract class OfficeAssignedStaff extends Staff {
 }
 
 public class Librarian extends OfficeAssignedStaff {
+    private static int librarianOfficeNumber = 0;
+
     public Librarian(int id, String name, String address, int phone, double salary, int officeNo) {
-        super(id, name, address, phone, salary, officeNo);
+        super(id, name, address, phone, salary, (officeNo == -1) ? librarianOfficeNumber++ : officeNo);
     }
 }

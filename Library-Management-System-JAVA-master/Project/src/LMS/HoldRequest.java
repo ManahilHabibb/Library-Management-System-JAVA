@@ -27,37 +27,43 @@ public class HoldRequest {
     }
 
     // Open for extension: Hold the request actions
-    public void performAction(HoldRequestAction action) {
+    public void performAction(HoldRequestActionStrategy action) {
         action.execute(this);
     }
 }
 
-// Abstract Action Class
-interface HoldRequestAction {
+// Abstract Action Class (Avoids Code Duplication)
+abstract class AbstractHoldRequestAction implements HoldRequestActionStrategy {
+    protected void logAction(HoldRequest holdRequest, String action) {
+        System.out.println("Hold request " + action + " for book: " + 
+                holdRequest.getBook().getTitle() + 
+                " by borrower: " + holdRequest.getBorrower().getName());
+    }
+}
+
+// Strategy Interface
+interface HoldRequestActionStrategy {
     void execute(HoldRequest holdRequest);
 }
 
 // Concrete Actions
-class ApproveHoldRequestAction implements HoldRequestAction {
+class ApproveHoldRequestAction extends AbstractHoldRequestAction {
     @Override
     public void execute(HoldRequest holdRequest) {
-        System.out.println("Hold request approved for book: " + holdRequest.getBook().getTitle() +
-                " by borrower: " + holdRequest.getBorrower().getName());
+        logAction(holdRequest, "approved");
     }
 }
 
-class RejectHoldRequestAction implements HoldRequestAction {
+class RejectHoldRequestAction extends AbstractHoldRequestAction {
     @Override
     public void execute(HoldRequest holdRequest) {
-        System.out.println("Hold request rejected for book: " + holdRequest.getBook().getTitle() +
-                " by borrower: " + holdRequest.getBorrower().getName());
+        logAction(holdRequest, "rejected");
     }
 }
 
-class CancelHoldRequestAction implements HoldRequestAction {
+class CancelHoldRequestAction extends AbstractHoldRequestAction {
     @Override
     public void execute(HoldRequest holdRequest) {
-        System.out.println("Hold request canceled for book: " + holdRequest.getBook().getTitle() +
-                " by borrower: " + holdRequest.getBorrower().getName());
+        logAction(holdRequest, "canceled");
     }
 }
