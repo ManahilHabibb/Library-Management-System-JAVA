@@ -2,6 +2,7 @@ package LMS;
 
 import java.util.Date;
 
+// Loan Class
 public class Loan {
     private Borrower borrower;
     private Book book;
@@ -66,28 +67,25 @@ public class Loan {
     public void setIssuedDate(Date issuedDate) {
         this.issuedDate = issuedDate;
     }
-
-    // Open for extension: Loan operations
-    public void performAction(LoanAction action) {
-        action.execute(this);
-    }
 }
 
-// Abstract Action Class
-interface LoanAction {
-    void execute(Loan loan);
+// Separate Interfaces (ISP Applied)
+interface ReturnLoan {
+    void returnLoan(Loan loan, Staff receiver);
 }
 
-// Concrete Actions
-class ReturnLoanAction implements LoanAction {
-    private Staff receiver;
+interface RenewLoan {
+    void renewLoan(Loan loan, Date newIssuedDate);
+}
 
-    public ReturnLoanAction(Staff receiver) {
-        this.receiver = receiver;
-    }
+interface MarkFinePaid {
+    void markFineAsPaid(Loan loan);
+}
 
+// Concrete Action for Returning Loan
+class ReturnLoanAction implements ReturnLoan {
     @Override
-    public void execute(Loan loan) {
+    public void returnLoan(Loan loan, Staff receiver) {
         loan.setDateReturned(new Date());
         loan.setReceiver(receiver);
         System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been returned by "
@@ -95,23 +93,19 @@ class ReturnLoanAction implements LoanAction {
     }
 }
 
-class RenewLoanAction implements LoanAction {
-    private Date newIssuedDate;
-
-    public RenewLoanAction(Date newIssuedDate) {
-        this.newIssuedDate = newIssuedDate;
-    }
-
+// Concrete Action for Renewing Loan
+class RenewLoanAction implements RenewLoan {
     @Override
-    public void execute(Loan loan) {
+    public void renewLoan(Loan loan, Date newIssuedDate) {
         loan.setIssuedDate(newIssuedDate);
         System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been renewed.");
     }
 }
 
-class MarkFinePaidAction implements LoanAction {
+// Concrete Action for Marking Fine as Paid
+class MarkFinePaidAction implements MarkFinePaid {
     @Override
-    public void execute(Loan loan) {
+    public void markFineAsPaid(Loan loan) {
         loan.setFinePaid(true);
         System.out.println("Fine for loan on book '" + loan.getBook().getTitle() + "' has been paid.");
     }
