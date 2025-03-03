@@ -17,27 +17,24 @@ interface BookOperation {
     void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
 }
 
-// Interface for issuing a book
+// Interfaces for different operations
 interface IssueBookOperation extends BookOperation {
     void issueBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
 }
 
-// Interface for placing a hold request
 interface HoldRequestOperation extends BookOperation {
     void makeHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
 }
 
-// Interface for servicing a hold request
 interface ServiceHoldRequestOperation extends BookOperation {
     void serviceHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
 }
 
-// Interface for returning a book
 interface ReturnBookOperation extends BookOperation {
     void returnBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
 }
 
-// Concrete implementation for issuing a book
+// Implementation for issuing a book
 class IssueBookOperationImpl implements IssueBookOperation {
     @Override
     public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
@@ -75,7 +72,7 @@ class IssueBookOperationImpl implements IssueBookOperation {
     }
 }
 
-// Concrete implementation for placing a hold request
+// Implementation for placing a hold request
 class MakeHoldRequestOperationImpl implements HoldRequestOperation {
     @Override
     public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
@@ -91,7 +88,7 @@ class MakeHoldRequestOperationImpl implements HoldRequestOperation {
     }
 }
 
-// Concrete implementation for servicing a hold request
+// Implementation for servicing a hold request
 class ServiceHoldRequestOperationImpl implements ServiceHoldRequestOperation {
     @Override
     public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
@@ -108,7 +105,7 @@ class ServiceHoldRequestOperationImpl implements ServiceHoldRequestOperation {
     }
 }
 
-// Concrete implementation for returning a book
+// Implementation for returning a book
 class ReturnBookOperationImpl implements ReturnBookOperation {
     @Override
     public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
@@ -124,4 +121,66 @@ class ReturnBookOperationImpl implements ReturnBookOperation {
         System.out.println("\nThe book " + book.getTitle() + " has been returned by " + borrower.getName());
     }
 }
+
+// Fix: Missing Action Classes for Borrower Operations
+interface BorrowerAction {
+    void execute(Borrower borrower);
+}
+
+// Action for Adding a Borrowed Book
+class AddBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public AddBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addLoan(loan);
+    }
+}
+
+// Action for Removing a Borrowed Book
+class RemoveBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public RemoveBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeLoan(loan);
+    }
+}
+
+// Action for Adding a Hold Request
+class AddHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public AddHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addHoldRequest(holdRequest);
+    }
+}
+
+// Action for Removing a Hold Request
+class RemoveHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public RemoveHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeHoldRequest(holdRequest);
+    }
+}
+
 

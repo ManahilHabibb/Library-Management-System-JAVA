@@ -33,5 +33,6 @@ public class BorrowerService {
         }
 
         System.out.println("\nBorrower is successfully updated.");
+        sc.close();
     }
 }

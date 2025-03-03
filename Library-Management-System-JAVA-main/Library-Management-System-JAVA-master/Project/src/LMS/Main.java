@@ -15,13 +15,13 @@ public class Main {
 
     // Asking for Input as Choice (returns a number > min and < max)
     public static int takeInput(int min, int max) {
-        Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(System.in); 
         while (true) {
             System.out.println("\nEnter Choice: ");
             String choice = input.next();
             try {
                 int num = Integer.parseInt(choice);
-                if (num > min && num < max) {
+                if (num > min && num < max) {  input.close();
                     return num;
                 } else {
                     System.out.println("\nInvalid Input.");
@@ -30,6 +30,7 @@ public class Main {
                 System.out.println("\nInvalid Input.");
             }
         }
+
     }
 
     // ----- Helper methods to replace missing Library functionalities -----
@@ -158,13 +159,14 @@ public class Main {
                 + p.getPhoneNumber());
     }
 
-    // Issues a book to a borrower (creates a new Loan)
     public static void issueBook(Book b, Borrower bor, Staff issuer, Library lib) {
         System.out.println("Book \"" + b.getTitle() + "\" issued to " + bor.getName() + " by " + issuer.getName());
         Loan loan = new Loan(bor, b, issuer, issuer, new Date(), null, false);
         lib.addLoan(loan);
-        bor.addBorrowedBook(loan);
+        bor.borrowBook(loan);  // ✅ Correct method
     }
+    
+    
 
     // Returns a book (marks the loan as returned)
     public static void returnBook(Book b, Borrower bor, Loan l, Staff receiver) {
@@ -504,6 +506,12 @@ public class Main {
             dao.persistLibrary(lib);
         } catch (Exception e) {
             System.out.println("\nExiting...\n");
+            
         }
+        
+            input.close();
+        
+        
     }
+    
 }

@@ -12,9 +12,8 @@ public class Staff extends Person {
         return salary;
     }
 
-    //  Use the same performAction method as in Person
-    @Override
-    public void performAction(PersonAction action) {
+    // ✅ Fix: Use StaffAction instead of PersonAction
+    public void performAction(StaffAction action) {
         action.execute(this);
     }
 }
@@ -24,7 +23,7 @@ interface StaffAction {
     void execute(Staff staff);
 }
 
-// Concrete Actions
+// Concrete Action: Updating Salary
 class UpdateSalaryAction implements StaffAction {
     private double newSalary;
 

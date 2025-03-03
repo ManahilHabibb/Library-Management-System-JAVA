@@ -26,6 +26,15 @@ public class HoldRequest {
         return requestDate;
     }
 
+    // ✅ Added methods to avoid errors in HoldRequestPrinter
+    public String getBookTitle() {
+        return book.getTitle();
+    }
+
+    public String getBorrowerName() {
+        return borrower.getName();
+    }
+
     // Open for extension: Hold the request actions
     public void performAction(HoldRequestActionStrategy action) {
         action.execute(this);
@@ -36,8 +45,8 @@ public class HoldRequest {
 abstract class AbstractHoldRequestAction implements HoldRequestActionStrategy {
     protected void logAction(HoldRequest holdRequest, String action) {
         System.out.println("Hold request " + action + " for book: " + 
-                holdRequest.getBook().getTitle() + 
-                " by borrower: " + holdRequest.getBorrower().getName());
+                holdRequest.getBookTitle() + 
+                " by borrower: " + holdRequest.getBorrowerName());
     }
 }
 
