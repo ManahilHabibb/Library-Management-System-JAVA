@@ -39,7 +39,7 @@ public class BorrowerPrinter {
     }
 
     public static void printOnHoldBooks(Borrower borrower) {
-        ArrayList<HoldRequest> onHoldBooks = borrower.getOnHoldBooks();
+        ArrayList<HoldRequest> onHoldBooks = borrower.getHoldRequests(); // 🔄 Fixed here!
         if (onHoldBooks == null || onHoldBooks.isEmpty()) {
             System.out.println("\nNo on-hold books.");
             return;

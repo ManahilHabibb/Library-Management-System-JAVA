@@ -55,6 +55,15 @@ public class Borrower extends Person implements BorrowingActions, HoldRequestAct
         }
     }
 
+    // New methods for loan management
+    public void addLoan(Loan loan) {
+        borrowedBooks.add(loan);
+    }
+
+    public void removeLoan(Loan loan) {
+        borrowedBooks.remove(loan);
+    }
+
     // Hold Request Actions
     @Override
     public void addHoldRequest(HoldRequest holdRequest) {
@@ -83,5 +92,66 @@ public class Borrower extends Person implements BorrowingActions, HoldRequestAct
         } else {
             System.out.println("Invalid action.");
         }
+    }
+}
+
+// BorrowerAction Interface
+interface BorrowerAction {
+    void execute(Borrower borrower);
+}
+
+// Action for Adding a Borrowed Book
+class AddBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public AddBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addLoan(loan);
+    }
+}
+
+// Action for Removing a Borrowed Book
+class RemoveBorrowedBookAction implements BorrowerAction {
+    private Loan loan;
+
+    public RemoveBorrowedBookAction(Loan loan) {
+        this.loan = loan;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeLoan(loan);
+    }
+}
+
+// Action for Adding a Hold Request
+class AddHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public AddHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.addHoldRequest(holdRequest);
+    }
+}
+
+// Action for Removing a Hold Request
+class RemoveHoldRequestAction implements BorrowerAction {
+    private HoldRequest holdRequest;
+
+    public RemoveHoldRequestAction(HoldRequest holdRequest) {
+        this.holdRequest = holdRequest;
+    }
+
+    @Override
+    public void execute(Borrower borrower) {
+        borrower.removeHoldRequest(holdRequest);
     }
 }
