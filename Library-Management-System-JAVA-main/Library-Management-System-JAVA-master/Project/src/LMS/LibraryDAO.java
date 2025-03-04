@@ -6,12 +6,14 @@ import java.sql.*;
 public class LibraryDAO {
     private DatabaseOperations databaseOperations;
 
-    // Fix: Default constructor to prevent errors in existing code
+     
+// Applying (DIP) in LibraryDAO which depends on an abstraction (DatabaseOperations) rather than a concrete class.
+   
     public LibraryDAO() {
         this.databaseOperations = new SQLDatabaseOperations(); // Default to SQL
     }
 
-    // Parameterized constructor for flexibility
+    // Constructor Injection to follow DIP
     public LibraryDAO(DatabaseOperations databaseOperations) {
         this.databaseOperations = databaseOperations;
     }
@@ -29,7 +31,8 @@ public class LibraryDAO {
     }
 }
 
-// Abstract Interface for Database Operations
+// Abstract Interface for Database Operations (DIP Applied)
+
 interface DatabaseOperations {
     Connection getConnection();
     void loadLibraryData(Library library) throws SQLException, IOException;

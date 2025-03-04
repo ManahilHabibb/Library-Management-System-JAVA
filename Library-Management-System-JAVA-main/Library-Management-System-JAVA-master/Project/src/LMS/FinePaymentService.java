@@ -3,10 +3,11 @@ package LMS;
 import java.util.Scanner;
 
 public class FinePaymentService {
-    private FineCalculator calculator;
+    private FineComputationService calculator; 
 
-    public FinePaymentService(FineStrategy fineStrategy) {
-        this.calculator = new FineCalculator(fineStrategy);
+    // DIP Applied Through Constructor 
+    public FinePaymentService(FineComputationService calculator) {
+        this.calculator = calculator;
     }
 
     /**
@@ -19,7 +20,8 @@ public class FinePaymentService {
      * @return true if the fine was paid; false otherwise.
      */
     public boolean processFinePayment(Loan loan, int bookReturnDeadline, double perDayFine, Scanner scanner) {
-        double fine = calculator.computeFine(loan, bookReturnDeadline, perDayFine);
+        double fine = calculator.computeFine(loan, bookReturnDeadline, perDayFine); 
+
         if (fine <= 0) {
             System.out.println("No fine is generated.");
             loan.setFinePaid(true);
@@ -32,5 +34,24 @@ public class FinePaymentService {
         boolean paid = choice.equalsIgnoreCase("y");
         loan.setFinePaid(paid);
         return paid;
+    }
+}
+
+// Interface introduced for Dependency Inversion Principle
+interface FineComputationService {
+    double computeFine(Loan loan, int bookReturnDeadline, double perDayFine);
+}
+
+//  Now FineCalculator follows the dependency inversion principle
+class FineCalculator implements FineComputationService {
+    private FineStrategy fineStrategy;
+
+    public FineCalculator(FineStrategy fineStrategy) {
+        this.fineStrategy = fineStrategy;
+    }
+
+    @Override
+    public double computeFine(Loan loan, int bookReturnDeadline, double perDayFine) {
+        return fineStrategy.calculateFine(0, perDayFine); 
     }
 }

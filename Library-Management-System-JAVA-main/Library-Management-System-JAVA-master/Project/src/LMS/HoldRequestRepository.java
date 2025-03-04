@@ -6,28 +6,37 @@ import java.util.List;
 
 public class HoldRequestRepository {
 
-    public List<HoldRequest> holdRequests;
+    private final List<HoldRequest> holdRequests; // Encapsulation improved
 
     public HoldRequestRepository() {
-        holdRequests = new ArrayList<>();
+        this.holdRequests = new ArrayList<>();
     }
 
     // Adds a hold request to the repository.
     public void addHoldRequest(HoldRequest hr) {
-        holdRequests.add(hr);
+        if (hr != null) {
+            holdRequests.add(hr);
+        } else {
+            System.out.println("Invalid HoldRequest: Cannot add null.");
+        }
     }
 
     // Removes a specific hold request.
     public boolean removeHoldRequest(HoldRequest hr) {
+        if (hr == null) {
+            System.out.println("Invalid HoldRequest: Cannot remove null.");
+            return false;
+        }
         return holdRequests.remove(hr);
     }
 
     // Removes and returns the first hold request in the list.
     public HoldRequest removeFirstHoldRequest() {
-        if (!holdRequests.isEmpty()) {
-            return holdRequests.remove(0);
+        if (holdRequests.isEmpty()) {
+            System.out.println("No HoldRequests available to remove.");
+            return null;
         }
-        return null;
+        return holdRequests.remove(0);
     }
 
     // Returns an unmodifiable view of the hold requests.

@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.sql.*;
 import java.util.Date;
-import java.util.Scanner;
 
 public class Main {
 
@@ -116,7 +115,9 @@ public class Main {
         System.out.println("Enter phone number:");
         int phone = scanner.nextInt();
         if (type == 'b') {
-            Borrower b = new Borrower(-1, name, address, phone);
+            IBorrowerRepository borrowerRepo = new BorrowerRepository(); 
+            Borrower b = new Borrower(-1, name, address, phone, borrowerRepo); 
+
             lib.addPerson(b);
             System.out.println("Borrower created with ID: " + b.getID());
         } else if (type == 'c') {
@@ -162,9 +163,10 @@ public class Main {
 
     public static void issueBook(Book b, Borrower bor, Staff issuer, Library lib) {
         System.out.println("Book \"" + b.getTitle() + "\" issued to " + bor.getName() + " by " + issuer.getName());
-        Loan loan = new Loan(bor, b, issuer, issuer, new Date(), null, false);
+      Loan loan = new Loan(bor, b, issuer, new Date());
+
         lib.addLoan(loan);
-        bor.borrowBook(loan);  // ✅ Correct method
+        bor.borrowBook(loan); 
     }
     
     

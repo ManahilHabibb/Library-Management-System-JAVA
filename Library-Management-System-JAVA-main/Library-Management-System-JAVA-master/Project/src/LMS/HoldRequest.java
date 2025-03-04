@@ -26,7 +26,6 @@ public class HoldRequest {
         return requestDate;
     }
 
-    // ✅ Added methods to avoid errors in HoldRequestPrinter
     public String getBookTitle() {
         return book.getTitle();
     }
@@ -35,27 +34,36 @@ public class HoldRequest {
         return borrower.getName();
     }
 
-    // Open for extension: Hold the request actions
-    public void performAction(HoldRequestActionStrategy action) {
-        action.execute(this);
+    // Dependency Principle Applied
+    private HoldRequestActionStrategy actionStrategy;
+
+    public void setActionStrategy(HoldRequestActionStrategy actionStrategy) {
+        this.actionStrategy = actionStrategy;
+    }
+
+    public void performAction() {
+        if (actionStrategy != null) {
+            actionStrategy.execute(this);
+        } else {
+            System.out.println("No action strategy set for HoldRequest.");
+        }
     }
 }
 
-// Abstract Action Class (Avoids Code Duplication)
-abstract class AbstractHoldRequestAction implements HoldRequestActionStrategy {
-    protected void logAction(HoldRequest holdRequest, String action) {
-        System.out.println("Hold request " + action + " for book: " + 
-                holdRequest.getBookTitle() + 
-                " by borrower: " + holdRequest.getBorrowerName());
-    }
-}
 
-// Strategy Interface
 interface HoldRequestActionStrategy {
     void execute(HoldRequest holdRequest);
 }
 
-// Concrete Actions
+
+abstract class AbstractHoldRequestAction implements HoldRequestActionStrategy {
+    protected void logAction(HoldRequest holdRequest, String action) {
+        System.out.println("Hold request " + action + " for book: " +
+                holdRequest.getBookTitle() +
+                " by borrower: " + holdRequest.getBorrowerName());
+    }
+}
+
 class ApproveHoldRequestAction extends AbstractHoldRequestAction {
     @Override
     public void execute(HoldRequest holdRequest) {

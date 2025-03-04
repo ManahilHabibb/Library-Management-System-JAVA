@@ -1,22 +1,10 @@
 package LMS;
 
-// Interface for defining librarian assignment policies
-interface LibrarianAssignmentPolicy {
-    boolean canAssignLibrarian(Library library, Librarian librarian);
-}
-
-class SingleLibrarianPolicy implements LibrarianAssignmentPolicy {
-    @Override
-    public boolean canAssignLibrarian(Library library, Librarian librarian) {
-        return library.getLibrarian() == null;
-    }
-}
-
 public class LibrarianService {
-    private Library library;
+    private LibraryInterface library;  // Depend on abstraction, not concrete Library class
     private LibrarianAssignmentPolicy assignmentPolicy;
 
-    public LibrarianService(Library library, LibrarianAssignmentPolicy assignmentPolicy) {
+    public LibrarianService(LibraryInterface library, LibrarianAssignmentPolicy assignmentPolicy) {
         this.library = library;
         this.assignmentPolicy = assignmentPolicy;
     }
@@ -38,3 +26,5 @@ public class LibrarianService {
         }
     }
 }
+
+

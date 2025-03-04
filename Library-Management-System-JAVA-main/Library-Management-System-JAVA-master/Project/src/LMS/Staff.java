@@ -1,6 +1,7 @@
 package LMS;
 
-public class Staff extends Person {
+// Staff class implementing SalaryUpdatable interface
+public class Staff extends Person implements SalaryUpdatable {
     private double salary;
 
     public Staff(int id, String name, String address, int phone, double salary) {
@@ -8,22 +9,33 @@ public class Staff extends Person {
         this.salary = salary;
     }
 
+    @Override
+    public void setSalary(double newSalary) {
+        this.salary = newSalary;
+    }
+
+    @Override
     public double getSalary() {
         return salary;
     }
 
-    // ✅ Fix: Use StaffAction instead of PersonAction
     public void performAction(StaffAction action) {
         action.execute(this);
     }
 }
 
-// Abstract Action Interface
-interface StaffAction {
-    void execute(Staff staff);
+
+interface SalaryUpdatable {
+    void setSalary(double newSalary);
+    double getSalary();
 }
 
-// Concrete Action: Updating Salary
+
+interface StaffAction {
+    void execute(SalaryUpdatable staff);
+}
+
+
 class UpdateSalaryAction implements StaffAction {
     private double newSalary;
 
@@ -32,7 +44,8 @@ class UpdateSalaryAction implements StaffAction {
     }
 
     @Override
-    public void execute(Staff staff) {
-        System.out.println(staff.getName() + "'s salary updated from " + staff.getSalary() + " to " + newSalary);
+    public void execute(SalaryUpdatable staff) {
+        System.out.println("Salary updated from " + staff.getSalary() + " to " + newSalary);
+        staff.setSalary(newSalary);
     }
 }

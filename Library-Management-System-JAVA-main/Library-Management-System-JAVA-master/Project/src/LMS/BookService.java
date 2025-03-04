@@ -3,55 +3,87 @@ package LMS;
 import java.util.Date;
 import java.util.Scanner;
 
-// Main service class that performs actions based on operations
+// BookService now depends on an abstraction (IHoldRequestRepository) instead of a concrete class
 public class BookService {
-    private HoldRequestRepository holdRequestRepository = new HoldRequestRepository();
+    private IHoldRequestRepository holdRequestRepository;
+
+    //  (DIP applied)
+    public BookService(IHoldRequestRepository holdRequestRepository) {
+        this.holdRequestRepository = holdRequestRepository;
+    }
 
     public void performAction(BookOperation operation, Book book, Borrower borrower, Staff staff, Loan loan) {
         operation.execute(book, borrower, staff, loan, holdRequestRepository);
     }
 }
 
+// Interface for HoldRequestRepository 
+interface IHoldRequestRepository {
+    void addHoldRequest(HoldRequest holdRequest);
+    void removeHoldRequest(HoldRequest holdRequest);
+    java.util.List<HoldRequest> getHoldRequests();
+}
+
+// Concrete implementation of IHoldRequestRepository
+class HoldRequestRepository implements IHoldRequestRepository {
+    private java.util.List<HoldRequest> holdRequests = new java.util.ArrayList<>();
+
+    @Override
+    public void addHoldRequest(HoldRequest holdRequest) {
+        holdRequests.add(holdRequest);
+    }
+
+    @Override
+    public void removeHoldRequest(HoldRequest holdRequest) {
+        holdRequests.remove(holdRequest);
+    }
+
+    @Override
+    public java.util.List<HoldRequest> getHoldRequests() {
+        return holdRequests;
+    }
+}
+
 // Base BookOperation interface
 interface BookOperation {
-    void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
+    void execute(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository);
 }
 
 // Interfaces for different operations
 interface IssueBookOperation extends BookOperation {
-    void issueBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
+    void issueBook(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository);
 }
 
 interface HoldRequestOperation extends BookOperation {
-    void makeHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
+    void makeHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository);
 }
 
 interface ServiceHoldRequestOperation extends BookOperation {
-    void serviceHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
+    void serviceHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository);
 }
 
 interface ReturnBookOperation extends BookOperation {
-    void returnBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository);
+    void returnBook(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository);
 }
 
 // Implementation for issuing a book
 class IssueBookOperationImpl implements IssueBookOperation {
     @Override
-    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         issueBook(book, borrower, staff, loan, holdRequestRepository);
     }
 
     @Override
-    public void issueBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void issueBook(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         if (book.isIssued()) {
             System.out.println("\nThe book " + book.getTitle() + " is already issued.");
             System.out.println("Would you like to place a hold request? (y/n)");
             Scanner sc = new Scanner(System.in);
             String choice = sc.next();
-            sc.close();
-            if (choice.equals("y")) {
+            if (choice.equalsIgnoreCase("y")) {
                 new MakeHoldRequestOperationImpl().execute(book, borrower, staff, loan, holdRequestRepository);
             }
+            sc.close();
             return;
         }
 
@@ -65,7 +97,8 @@ class IssueBookOperationImpl implements IssueBookOperation {
         }
 
         book.setIssued(true);
-        Loan newLoan = new Loan(borrower, book, staff, null, new Date(), null, false);
+        Loan newLoan = new Loan(borrower, book, staff, new Date());
+
         Library.getInstance().addLoan(newLoan);
         borrower.performAction(new AddBorrowedBookAction(newLoan));
         System.out.println("\nThe book " + book.getTitle() + " is successfully issued to " + borrower.getName() + ".");
@@ -75,12 +108,12 @@ class IssueBookOperationImpl implements IssueBookOperation {
 // Implementation for placing a hold request
 class MakeHoldRequestOperationImpl implements HoldRequestOperation {
     @Override
-    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         makeHoldRequest(book, borrower, staff, loan, holdRequestRepository);
     }
 
     @Override
-    public void makeHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void makeHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         HoldRequest hr = new HoldRequest(borrower, book, new Date());
         holdRequestRepository.addHoldRequest(hr);
         borrower.performAction(new AddHoldRequestAction(hr));
@@ -91,12 +124,12 @@ class MakeHoldRequestOperationImpl implements HoldRequestOperation {
 // Implementation for servicing a hold request
 class ServiceHoldRequestOperationImpl implements ServiceHoldRequestOperation {
     @Override
-    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         serviceHoldRequest(book, borrower, staff, loan, holdRequestRepository);
     }
 
     @Override
-    public void serviceHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void serviceHoldRequest(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         if (!holdRequestRepository.getHoldRequests().isEmpty()) {
             HoldRequest hr = holdRequestRepository.getHoldRequests().get(0);
             holdRequestRepository.removeHoldRequest(hr);
@@ -108,23 +141,18 @@ class ServiceHoldRequestOperationImpl implements ServiceHoldRequestOperation {
 // Implementation for returning a book
 class ReturnBookOperationImpl implements ReturnBookOperation {
     @Override
-    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void execute(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         returnBook(book, borrower, staff, loan, holdRequestRepository);
     }
 
     @Override
-    public void returnBook(Book book, Borrower borrower, Staff staff, Loan loan, HoldRequestRepository holdRequestRepository) {
+    public void returnBook(Book book, Borrower borrower, Staff staff, Loan loan, IHoldRequestRepository holdRequestRepository) {
         book.setIssued(false);
         loan.setDateReturned(new Date());
         loan.setReceiver(staff);
         borrower.performAction(new RemoveBorrowedBookAction(loan));
         System.out.println("\nThe book " + book.getTitle() + " has been returned by " + borrower.getName());
     }
-}
-
-// Fix: Missing Action Classes for Borrower Operations
-interface BorrowerAction {
-    void execute(Borrower borrower);
 }
 
 // Action for Adding a Borrowed Book
@@ -136,9 +164,11 @@ class AddBorrowedBookAction implements BorrowerAction {
     }
 
     @Override
+  
     public void execute(Borrower borrower) {
-        borrower.addLoan(loan);
+        borrower.borrowBook(loan);  
     }
+    
 }
 
 // Action for Removing a Borrowed Book
@@ -151,8 +181,9 @@ class RemoveBorrowedBookAction implements BorrowerAction {
 
     @Override
     public void execute(Borrower borrower) {
-        borrower.removeLoan(loan);
+        borrower.returnBook(loan); 
     }
+    
 }
 
 // Action for Adding a Hold Request
@@ -182,5 +213,3 @@ class RemoveHoldRequestAction implements BorrowerAction {
         borrower.removeHoldRequest(holdRequest);
     }
 }
-
-

@@ -5,8 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
-public class BorrowerService {
+// Abstraction Applied To Follow  DIP
+interface IBorrowerService {
+    void updateBorrowerInfo(Borrower borrower) throws IOException;
+}
 
+// Concrete class implementing abstraction
+public class BorrowerService implements IBorrowerService {
+
+    @Override
     public void updateBorrowerInfo(Borrower borrower) throws IOException {
         Scanner sc = new Scanner(System.in);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

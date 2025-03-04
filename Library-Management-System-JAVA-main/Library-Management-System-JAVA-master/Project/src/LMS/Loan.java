@@ -12,15 +12,14 @@ public class Loan {
     private Staff receiver;
     private boolean finePaid;
 
-    public Loan(Borrower borrower, Book book, Staff issuer, Staff receiver, Date issuedDate, Date dateReturned,
-            boolean finePaid) {
+    public Loan(Borrower borrower, Book book, Staff issuer, Date issuedDate) {
         this.borrower = borrower;
         this.book = book;
         this.issuer = issuer;
-        this.receiver = receiver;
         this.issuedDate = issuedDate;
-        this.dateReturned = dateReturned;
-        this.finePaid = finePaid;
+        this.dateReturned = null;
+        this.receiver = null;
+        this.finePaid = false;
     }
 
     // Getters and setters
@@ -69,21 +68,15 @@ public class Loan {
     }
 }
 
-// Separate Interfaces (ISP Applied)
-interface ReturnLoan {
+// DIP Applied: Interface for Loan Actions
+interface LoanActions {
     void returnLoan(Loan loan, Staff receiver);
-}
-
-interface RenewLoan {
     void renewLoan(Loan loan, Date newIssuedDate);
-}
-
-interface MarkFinePaid {
     void markFineAsPaid(Loan loan);
 }
 
-// Concrete Action for Returning Loan
-class ReturnLoanAction implements ReturnLoan {
+// Concrete Implementation (Dependency Injected)
+class LoanService implements LoanActions {
     @Override
     public void returnLoan(Loan loan, Staff receiver) {
         loan.setDateReturned(new Date());
@@ -91,19 +84,13 @@ class ReturnLoanAction implements ReturnLoan {
         System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been returned by "
                 + loan.getBorrower().getName());
     }
-}
 
-// Concrete Action for Renewing Loan
-class RenewLoanAction implements RenewLoan {
     @Override
     public void renewLoan(Loan loan, Date newIssuedDate) {
         loan.setIssuedDate(newIssuedDate);
         System.out.println("Loan for book '" + loan.getBook().getTitle() + "' has been renewed.");
     }
-}
 
-// Concrete Action for Marking Fine as Paid
-class MarkFinePaidAction implements MarkFinePaid {
     @Override
     public void markFineAsPaid(Loan loan) {
         loan.setFinePaid(true);

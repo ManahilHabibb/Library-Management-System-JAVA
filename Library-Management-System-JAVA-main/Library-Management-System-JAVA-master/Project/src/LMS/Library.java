@@ -3,7 +3,26 @@ package LMS;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Library {
+
+
+// Interface for Library dependency
+interface LibraryInterface {
+    Librarian getLibrarian();
+    void setLibrarian(Librarian librarian);
+    java.util.List<Person> getPersons();
+}
+// Interface for defining librarian assignment policies
+interface LibrarianAssignmentPolicy {
+    boolean canAssignLibrarian(LibraryInterface library, Librarian librarian);
+}
+
+class SingleLibrarianPolicy implements LibrarianAssignmentPolicy {
+    @Override
+    public boolean canAssignLibrarian(LibraryInterface library, Librarian librarian) {
+        return library.getLibrarian() == null;
+    }
+}
+public class Library implements LibraryInterface  {
     private String name;
     private Librarian librarian;
     private List<Person> persons;
@@ -104,7 +123,7 @@ public class Library {
 
 // Abstract Action Class
 interface LibraryAction {
-    void execute(Library library);
+    void execute(LibraryInterface library); 
 }
 
 // Concrete Actions
@@ -116,7 +135,7 @@ class AddPersonAction implements LibraryAction {
     }
 
     @Override
-    public void execute(Library library) {
+    public void execute(LibraryInterface library) {
         library.getPersons().add(person);
     }
 }
@@ -129,8 +148,8 @@ class AddBookAction implements LibraryAction {
     }
 
     @Override
-    public void execute(Library library) {
-        library.getBooks().add(book);
+    public void execute(LibraryInterface library) {
+        ((Library) library).getBooks().add(book);
     }
 }
 
@@ -142,7 +161,7 @@ class AddLoanAction implements LibraryAction {
     }
 
     @Override
-    public void execute(Library library) {
-        library.getLoans().add(loan);
+    public void execute(LibraryInterface library) {
+        ((Library) library).getLoans().add(loan);
     }
 }
