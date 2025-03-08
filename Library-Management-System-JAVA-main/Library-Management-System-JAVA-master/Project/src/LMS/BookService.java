@@ -42,6 +42,11 @@ class HoldRequestRepository implements IHoldRequestRepository {
     public java.util.List<HoldRequest> getHoldRequests() {
         return holdRequests;
     }
+
+    public HoldRequest removeFirstHoldRequest() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeFirstHoldRequest'");
+    }
 }
 
 // Base BookOperation interface
