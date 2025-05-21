@@ -3,26 +3,12 @@
 **Submitted to:** Ma’am Hareem Haider  
 **Course:** Software Design & Architecture  
 **Submitted by:**  
-- **Nagarash Fateh**  
-  - **Sap Id:** 44815  
-  - **Department:** BSSE  
-  - **Email:** [44815@students.riphah.edu.pk](mailto:44815@students.riphah.edu.pk)  
 - **Manahil Habib**  
-  - **Sap Id:** 47876  
-  - **Department:** BSSE  
-  - **Email:** [47876@students.riphah.edu.pk](mailto:47876@students.riphah.edu.pk)  
+- **Nagarash Fateh**  
 - **Wafi Wahid**  
-  - **Sap Id:** 47322  
-  - **Department:** BSSE  
-  - **Email:** [47322@students.riphah.edu.pk](mailto:47322@students.riphah.edu.pk)  
 - **Jaweriya Khan**  
-  - **Sap Id:** 46549  
-  - **Department:** BSSE  
-  - **Email:** [46549@students.riphah.edu.pk](mailto:46549@students.riphah.edu.pk)  
 - **Maria Kiran**  
-  - **Sap Id:** 44565  
-  - **Department:** BSSE  
-  - **Email:** [44565@students.riphah.edu.pk](mailto:44565@students.riphah.edu.pk)  
+
 
 **Department of Computing**  
 **Date:** 5th March, 2025  
